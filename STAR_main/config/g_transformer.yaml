@@ -1,0 +1,178 @@
+# @package _global_
+dataset:
+  _target_: src.data.MIMIC4SyntheticDatasetCollection
+  seed: 42
+  name: mimic4_sepsis_ne_map_exposure
+  path: dataset/Sepsis/MIMIC/24step_2h.h5
+
+  min_seq_length: 25
+  max_seq_length: 25
+  max_number:
+
+  projection_horizon: 6
+  n_treatments_seq: 1
+  holdout_ratio: 0
+
+  split:
+    val: 0.2
+    test: 0.2
+
+  val_batch_size: 512
+  treatment_mode: continuous
+
+  treatment_sequence:
+
+  autoregressive: true
+
+  synth_outcomes_list:
+    - _target_: src.data.mimic_iv.SyntheticOutcomeGenerator
+
+      exogeneous_vars:
+
+      exog_dependency:
+        _target_: src.data.mimic_iv.utils.RandomFourierFeaturesFunction
+        input_dim:
+        gamma:
+        scale:
+
+      exog_weight:
+
+      endo_dependency:
+        _target_: src.data.mimic_iv.utils.DiscretizedRandomGPFunction
+        kernels:
+          - _target_: sklearn.gaussian_process.kernels.Matern
+            length_scale:
+            nu:
+          - _target_: sklearn.gaussian_process.kernels.WhiteKernel
+            noise_level:
+
+      endo_rand_weight:
+      endo_spline_weight:
+      outcome_name:
+
+  synth_treatments_list:
+    - _target_: src.data.mimic_iv.SyntheticTreatment
+
+      confounding_vars:
+
+
+      confounder_outcomes:
+
+
+      confounding_dependency:
+        _target_: src.data.mimic_iv.utils.RandomFourierFeaturesFunction
+        input_dim:
+        gamma:
+        scale:
+
+      window:
+      conf_outcome_weight:
+      conf_vars_weight:
+
+      bias:
+      full_effect:
+      effect_window:
+      treatment_name:
+      dose_concentration:
+
+      treatment_assignment_mode:
+      history_outcome_source:
+
+      dose_response_shape:
+      benchmark_response_mode:
+
+      dr_params:
+        ed50:
+        heterogeneity_mode:
+        heterogeneity_source:
+        heterogeneity_strength:
+        heterogeneity_z_clip:
+        ed50_min:
+        ed50_max:
+
+      dose_marginal_mode:
+      inherit_real_treat_rate:
+      dose_marginal_conditional:
+
+      real_marginal_max_bins:
+      real_marginal_smooth_sigma_bins:
+      real_marginal_pseudocount:
+      real_marginal_zero_eps:
+      real_marginal_min_positive_n: 
+
+      target_treat_rate: 
+      positive_dose_mean: 
+
+      treatment_rho:
+      dose_rho: 
+
+  treatment_outcomes_influence:
+    y1:
+      -y1 name
+
+model:
+  name: G-Transformer
+  g_transformer:
+    _target_: src.models.g_transformer.GTransformer
+
+    min_seq_length:
+    max_seq_length: 
+
+    seq_hidden_units: 
+    num_layer: 
+    num_heads: 
+    ff_hidden_units: 
+    fc_hidden_units: 
+    dropout_rate: 
+    attn_dropout_rate: 
+
+    positional_encoding: 
+    max_relative_position: 
+    num_comp: 
+    comp_sizes:
+  
+    comp_types:
+
+    comp_num_classes:
+    comp_loss_weights:
+
+    categorical_relu: 
+    iterative_training: 
+
+    fit_treatment: 
+    treatment_loss_weight:
+    mc_samples: 
+
+    max_grad_norm: 
+    batch_size:
+
+    optimizer:
+      optimizer_cls: 
+      learning_rate:
+      weight_decay: 
+      lr_scheduler:
+
+    tune_hparams: 
+    tune_range: 
+    resources_per_trial:
+    hparams_grid:
+
+exp:
+  gpus:
+  seed: 
+  continuous_treatment_loss:
+  update_alpha:
+  weights_ema:
+  logging:
+  mlflow_uri:
+  max_epochs:
+
+  unscale_rmse:
+  percentage_rmse:
+  phase_b_output_dir:
+
+hydra:
+  run:
+    dir:
+  job:
+    chdir: 

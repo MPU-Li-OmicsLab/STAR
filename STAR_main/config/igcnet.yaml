@@ -1,0 +1,184 @@
+# @package _global_
+dataset:
+  _target_: src.data.MIMIC4SyntheticDatasetCollection
+
+  seed:
+  name:
+  path:
+
+  min_seq_length:
+  max_seq_length:
+  max_number:
+
+  projection_horizon:
+  n_treatments_seq:
+
+  split:
+    val:
+    test:
+
+  val_batch_size:
+  treatment_mode: continuous
+
+  treatment_sequence:
+
+  autoregressive: true
+
+  synth_outcomes_list:
+    - _target_: src.data.mimic_iv.SyntheticOutcomeGenerator
+
+      exogeneous_vars:
+
+      exog_dependency:
+        _target_: src.data.mimic_iv.utils.RandomFourierFeaturesFunction
+        input_dim:
+        gamma:
+        scale:
+
+      exog_weight:
+
+      endo_dependency:
+        _target_: src.data.mimic_iv.utils.DiscretizedRandomGPFunction
+        kernels:
+          - _target_: sklearn.gaussian_process.kernels.Matern
+            length_scale:
+            nu:
+          - _target_: sklearn.gaussian_process.kernels.WhiteKernel
+            noise_level:
+
+      endo_rand_weight:
+      endo_spline_weight:
+      outcome_name:
+
+  synth_treatments_list:
+    - _target_: src.data.mimic_iv.SyntheticTreatment
+
+      confounding_vars:
+
+
+      confounder_outcomes:
+
+
+      confounding_dependency:
+        _target_: src.data.mimic_iv.utils.RandomFourierFeaturesFunction
+        input_dim:
+        gamma:
+        scale:
+
+      window:
+      conf_outcome_weight:
+      conf_vars_weight:
+
+      bias:
+      full_effect:
+      effect_window:
+      treatment_name:
+      dose_concentration:
+
+      treatment_assignment_mode:
+      history_outcome_source:
+
+      dose_response_shape:
+      benchmark_response_mode:
+
+      dr_params:
+        ed50:
+        heterogeneity_mode:
+        heterogeneity_source:
+        heterogeneity_strength:
+        heterogeneity_z_clip:
+        ed50_min:
+        ed50_max:
+
+      dose_marginal_mode:
+      inherit_real_treat_rate:
+      dose_marginal_conditional:
+
+      real_marginal_max_bins:
+      real_marginal_smooth_sigma_bins:
+      real_marginal_pseudocount:
+      real_marginal_zero_eps:
+      real_marginal_min_positive_n:
+
+      target_treat_rate:
+      positive_dose_mean:
+
+      treatment_rho:
+      dose_rho:
+
+  treatment_outcomes_influence:
+    y1:
+      -y1 name
+
+model:
+  name: IGCNET
+  igcnet:
+    _target_: src.models.igcnet.IGCNET
+
+    min_seq_length:
+    max_seq_length:
+
+    seq_hidden_units:
+    hr_size:
+    fc_hidden_units:
+    dropout_rate:
+
+    num_layer:
+    num_heads:
+    max_grad_norm:
+    batch_size:
+
+    attn_dropout:
+    disable_cross_attention:
+    isolate_subnetwork:
+
+    self_positional_encoding:
+      absolute:
+      trainable:
+      max_relative_position:
+
+    optimizer:
+      optimizer_cls:
+      learning_rate:
+      weight_decay:
+      lr_scheduler:
+
+    tune_hparams:
+    tune_range:
+    hparams_grid:
+    resources_per_trial:
+
+    mechanism:
+      enabled:
+      output_dir:
+      run_id:
+      strategy:
+      seed:
+      every_n_steps:
+      probe_size:
+      probe_cache_path:
+
+exp:
+  gpus:
+  seed:
+
+  continuous_treatment_loss: mse
+  update_alpha:
+
+  logging:
+  mlflow_uri:
+  max_epochs:
+
+  unscale_rmse:
+  percentage_rmse:
+  phase_b_output_dir:
+
+  mechanism_match_budget:
+  save_decoder_ckpt:
+
+
+hydra:
+  run:
+    dir:
+  job:
+    chdir: 
